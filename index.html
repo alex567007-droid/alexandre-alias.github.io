@@ -420,23 +420,43 @@ function drawMatrix(){
 }
 setInterval(drawMatrix,55);
 
-// TYPING - Version humble comme demandé
+// TYPING - Version corrigée (dernière lettre reste plus longtemps)
 const phrases = [
   'Technicien Support Informatique N1',
   'Support Helpdesk',
   'Technicien Support N1',
   'Lorient (56)'
 ];
-let pi=0,ci=0,del=false;
-const tel=document.getElementById('typed');
-function type(){
-  const ph=phrases[pi];
-  tel.textContent=del?ph.substring(0,ci--):ph.substring(0,ci++);
-  if(!del&&ci===ph.length){del=true;setTimeout(type,1600);return;}
-  if(del&&ci===0){del=false;pi=(pi+1)%phrases.length;setTimeout(type,600);return;}
-  setTimeout(type,del?45:75);
+let pi = 0, ci = 0, isDeleting = false;
+const typed = document.getElementById('typed');
+
+function type() {
+  const currentPhrase = phrases[pi];
+  
+  if (isDeleting) {
+    ci--;
+  } else {
+    ci++;
+  }
+
+  typed.textContent = currentPhrase.substring(0, ci);
+
+  let typeSpeed = isDeleting ? 40 : 70;
+
+  if (!isDeleting && ci === currentPhrase.length) {
+    typeSpeed = 2000;        // ← Pause plus longue quand la phrase est complète
+    isDeleting = true;
+  } 
+  else if (isDeleting && ci === 0) {
+    isDeleting = false;
+    pi = (pi + 1) % phrases.length;
+    typeSpeed = 600;
+  }
+
+  setTimeout(type, typeSpeed);
 }
-setTimeout(type,2800);
+
+setTimeout(type, 2800);
 
 // SCROLL REVEAL
 const obs=new IntersectionObserver(entries=>{
