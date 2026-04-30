@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alexandre Alias — Support Informatique</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #030b0f;
+      --bg2: #071218;
+      --card: #071a24;
+      --green: #00ff88;
+      --cyan: #00e5ff;
+      --muted: #3a8a6a;
+      --text: #c8ffe8;
+      --border: rgba(0,255,136,0.15);
+      --glow-g: 0 0 20px rgba(0,255,136,0.3);
+      --glow-c: 0 0 20px rgba(0,229,255,0.3);
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{
+      font-family:'Share Tech Mono',monospace;
+      background:var(--bg); color:var(--text);
+      overflow-x:hidden; cursor:none;
+    }
+    body::after{
+      content:''; position:fixed; inset:0;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px);
+      pointer-events:none; z-index:9000;
+    }
+
+    /* CURSOR */
+    #cursor{width:10px;height:10px;background:var(--green);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:screen;transition:transform 0.1s;}
+    #cursor-ring{width:32px;height:32px;border:1px solid var(--green);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all 0.14s;opacity:0.5;}
+
+    /* PROGRESS */
+    #progress{position:fixed;top:0;left:0;height:2px;background:var(--green);z-index:1000;box-shadow:0 0 8px var(--green);transition:width 0.1s;}
+
+    /* HEADER */
+    header{
+      position:relative; min-height:100vh;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-align:center; padding:60px 24px; overflow:hidden; z-index:1;
+    }
+    #matrix{position:absolute;inset:0;opacity:0.18;z-index:0;}
+    .hgrid{
+      position:absolute;inset:0;
+      background-image:linear-gradient(rgba(0,255,136,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,0.04) 1px,transparent 1px);
+      background-size:48px 48px;
+    }
+    .header-inner{position:relative;z-index:2;}
+
+    .boot-line{
+      font-size:0.74rem;color:var(--muted);letter-spacing:1px;margin-bottom:5px;
+      opacity:0;animation:fadeUp 0.3s forwards;
+    }
+    .boot-line:nth-child(1){animation-delay:0s;}
+    .boot-line:nth-child(2){animation-delay:0.35s;}
+    .boot-line:nth-child(3){animation-delay:0.7s;}
+    .boot-line:nth-child(4){animation-delay:1.05s;}
+
+    .avatar-terminal{
+      width:100px;height:100px;border:1px solid var(--green);border-radius:4px;
+      margin:22px auto 22px;display:flex;align-items:center;justify-content:center;
+      position:relative;box-shadow:var(--glow-g),inset 0 0 30px rgba(0,255,136,0.05);
+      opacity:0;animation:fadeUp 0.5s 1.4s forwards;
+    }
+    .avatar-terminal::before{
+      content:'[USER]';position:absolute;top:-9px;left:10px;
+      font-size:0.62rem;color:var(--green);background:var(--bg);padding:0 6px;
+    }
+    .initials{
+      font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;
+      color:var(--green);text-shadow:var(--glow-g);
+      animation:glitch 5s infinite;
+    }
+    @keyframes glitch{
+      0%,88%,100%{text-shadow:var(--glow-g);transform:translate(0);}
+      89%{text-shadow:2px 0 var(--cyan),-2px 0 red;transform:translate(2px,-1px);}
+      91%{text-shadow:-2px 0 var(--cyan),2px 0 red;transform:translate(-2px,1px);}
+      93%{text-shadow:var(--glow-g);transform:translate(0);}
+    }
+
+    .header-name{
+      font-family:'Orbitron',monospace;
+      font-size:clamp(1.8rem,7vw,4rem);font-weight:900;
+      letter-spacing:4px;color:var(--green);text-shadow:var(--glow-g);
+      opacity:0;animation:fadeUp 0.6s 1.7s forwards;
+    }
+    .header-name::after{
+      content:'';display:block;height:2px;
+      background:linear-gradient(90deg,transparent,var(--green),transparent);
+      margin-top:6px;box-shadow:0 0 10px var(--green);
+    }
+
+    .header-sub{
+      margin:18px 0 28px;opacity:0;animation:fadeUp 0.4s 2.1s forwards;
+    }
+    .prompt-line{font-size:0.82rem;color:var(--muted);margin-bottom:6px;}
+    .prompt-arrow{color:var(--green);}
+    #typed{color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:0.92rem;}
+    .blink{animation:blink 1s infinite;color:var(--green);}
+    @keyframes blink{50%{opacity:0;}}
+
+    .contacts{
+      display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+      margin-bottom:40px;opacity:0;animation:fadeUp 0.4s 2.5s forwards;
+    }
+    .chip{
+      display:flex;align-items:center;gap:6px;padding:8px 14px;
+      border:1px solid var(--border);border-radius:3px;font-size:0.76rem;
+      color:var(--muted);background:rgba(0,255,136,0.03);transition:all 0.25s;
+    }
+    .chip::before{content:'> ';color:var(--green);}
+    .chip:hover{border-color:var(--green);color:var(--green);box-shadow:var(--glow-g);}
+
+    .scroll-hint{opacity:0;animation:fadeUp 0.4s 3s forwards;font-size:0.7rem;color:var(--muted);letter-spacing:3px;}
+    .s-arrow{display:block;width:1px;height:48px;background:linear-gradient(to bottom,var(--green),transparent);margin:8px auto 0;animation:sp 2s infinite;}
+    @keyframes sp{0%,100%{opacity:1}50%{opacity:0.2}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    /* MAIN */
+    main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 20px 100px;}
+    .two-col{display:grid;grid-template-columns:1fr 290px;gap:24px;align-items:start;}
+
+    /* SECTION HEAD */
+    .sh{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+    .sh .stag{
+      font-family:'Orbitron',monospace;font-size:0.68rem;font-weight:700;
+      color:var(--bg);background:var(--green);padding:3px 10px;border-radius:2px;letter-spacing:2px;
+    }
+    .sh h2{
+      font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700;
+      color:var(--green);letter-spacing:2px;text-transform:uppercase;
+    }
+    .sh .sline{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+
+    /* CARD */
+    .card{
+      background:var(--card);border:1px solid var(--border);border-radius:4px;
+      padding:24px;margin-bottom:20px;position:relative;overflow:hidden;transition:all 0.3s;
+    }
+    .card::before{
+      content:attr(data-label);position:absolute;top:-1px;right:14px;
+      font-size:0.62rem;color:var(--green);background:var(--card);padding:0 6px;
+      border:1px solid var(--border);border-top:none;border-radius:0 0 3px 3px;opacity:0.7;
+    }
+    .card:hover{border-color:rgba(0,255,136,0.35);box-shadow:var(--glow-g);}
+    .card:hover::after{
+      content:'';position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,var(--green),transparent);
+    }
+
+    /* REVEAL */
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity 0.65s,transform 0.65s;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .rl{opacity:0;transform:translateX(-28px);transition:opacity 0.65s,transform 0.65s;}
+    .rl.visible{opacity:1;transform:translateX(0);}
+    .rr{opacity:0;transform:translateX(28px);transition:opacity 0.65s,transform 0.65s;}
+    .rr.visible{opacity:1;transform:translateX(0);}
+
+    /* EXP */
+    .exp-item{margin-bottom:22px;}
+    .exp-item:last-child{margin-bottom:0;}
+    .exp-meta{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+    .exp-role{font-family:'Rajdhani',sans-serif;font-size:1.02rem;font-weight:700;color:#fff;letter-spacing:1px;}
+    .exp-co{font-size:0.76rem;color:var(--cyan);margin-top:3px;}
+    .exp-co::before{content:'// ';}
+    .exp-date{font-size:0.7rem;color:var(--muted);border:1px solid var(--border);padding:2px 10px;border-radius:2px;white-space:nowrap;}
+    .exp-sep{border:none;border-top:1px dashed rgba(0,255,136,0.12);margin:18px 0;}
+    .exp-list{list-style:none;}
+    .exp-list li{font-size:0.8rem;color:#8ab8a0;line-height:1.6;padding:3px 0 3px 18px;position:relative;}
+    .exp-list li::before{content:'→';position:absolute;left:0;color:var(--green);font-size:0.72rem;}
+
+    /* TAGS */
+    .tg{margin-bottom:14px;}
+    .tg:last-child{margin-bottom:0;}
+    .tg-title{font-size:0.66rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+    .tg-title::before{content:'# ';color:var(--green);}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;}
+    .sk{
+      padding:4px 11px;border:1px solid rgba(0,255,136,0.18);border-radius:2px;
+      font-size:0.73rem;color:#8ab8a0;background:rgba(0,255,136,0.04);transition:all 0.2s;cursor:default;
+    }
+    .sk:hover{background:rgba(0,255,136,0.12);border-color:var(--green);color:var(--green);text-shadow:0 0 8px var(--green);}
+
+    /* BARS */
+    .sbar{margin-bottom:12px;}
+    .sbar:last-child{margin-bottom:0;}
+    .sbar-h{display:flex;justify-content:space-between;margin-bottom:5px;}
+    .sbar-n{font-size:0.78rem;color:var(--text);}
+    .sbar-p{font-size:0.72rem;color:var(--green);}
+    .sbar-t{height:3px;background:rgba(0,255,136,0.08);}
+    .sbar-f{height:100%;width:0;background:var(--green);box-shadow:0 0 6px var(--green);transition:width 1.4s cubic-bezier(.4,0,.2,1);}
+
+    /* SIDEBAR */
+    .form-item{padding:12px 0;border-bottom:1px dashed rgba(0,255,136,0.1);}
+    .form-item:last-child{border-bottom:none;}
+    .form-title{font-family:'Rajdhani',sans-serif;font-size:0.9rem;font-weight:700;color:#fff;letter-spacing:1px;}
+    .form-school{font-size:0.75rem;color:var(--cyan);margin-top:3px;}
+    .form-school::before{content:'> ';}
+    .form-date{font-size:0.7rem;color:var(--muted);margin-top:2px;}
+
+    .cert-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(0,255,136,0.1);}
+    .cert-item:last-child{border-bottom:none;}
+    .cert-badge{
+      width:38px;height:38px;border:1px solid var(--green);border-radius:3px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+      font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:var(--green);
+      box-shadow:0 0 8px rgba(0,255,136,0.2);
+    }
+    .cert-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.88rem;color:#fff;}
+    .cert-yr{font-size:0.7rem;color:var(--muted);}
+
+    .lang-item{display:flex;align-items:center;margin-bottom:14px;}
+    .lang-item:last-child{margin-bottom:0;}
+    .lang-name{font-size:0.8rem;min-width:90px;}
+    .lang-bar{flex:1;height:3px;background:rgba(0,255,136,0.08);margin:0 12px;}
+    .lang-bf{height:100%;width:0;transition:width 1.2s ease;}
+    .lang-val{font-size:0.7rem;color:var(--cyan);}
+
+    .profil-text{font-size:0.8rem;color:#8ab8a0;line-height:1.8;}
+    .profil-text::before{content:'/* ';color:var(--muted);}
+    .profil-text::after{content:' */';color:var(--muted);}
+
+    .int-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+    .int-card{
+      display:flex;align-items:center;gap:8px;padding:9px 11px;
+      border:1px solid rgba(0,255,136,0.1);border-radius:3px;
+      font-size:0.74rem;color:#8ab8a0;background:rgba(0,255,136,0.03);transition:all 0.2s;
+    }
+    .int-card:hover{border-color:var(--green);color:var(--green);}
+    .int-card .ic{font-size:1.05rem;}
+
+    footer{
+      position:relative;z-index:1;text-align:center;padding:32px 20px;
+      border-top:1px solid var(--border);font-size:0.72rem;color:var(--muted);
+    }
+    footer span{color:var(--green);}
+
+    @media(max-width:700px){
+      .two-col{grid-template-columns:1fr;}
+      body{cursor:auto;}
+      #cursor,#cursor-ring{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div id="progress"></div>
+<canvas id="matrix"></canvas>
+
+<header>
+  <div class="hgrid"></div>
+  <div class="header-inner">
+    <div class="boot-line">[BOOT] system_init ............... OK</div>
+    <div class="boot-line">[LOAD] cv_alexandre_alias.exe .... OK</div>
+    <div class="boot-line">[AUTH] credentials_check ......... OK</div>
+    <div class="boot-line">[READY] rendering_profile ........ OK</div>
+
+    <div class="avatar-terminal"><div class="initials">AA</div></div>
+
+    <h1 class="header-name">ALEXANDRE_ALIAS</h1>
+
+    <div class="header-sub">
+      <div class="prompt-line"><span class="prompt-arrow">root@cv:~$</span> whoami</div>
+      <div><span id="typed"></span><span class="blink">█</span></div>
+    </div>
+
+    <div class="contacts">
+      <div class="chip">06.82.03.45.41</div>
+      <div class="chip">alex567007@gmail.com</div>
+      <div class="chip">Lorient · Permis B</div>
+    </div>
+
+    <div class="scroll-hint">SCROLL_DOWN<span class="s-arrow"></span></div>
+  </div>
+</header>
+
+<main>
+  <div class="two-col">
+
+    <div>
+      <!-- EXP -->
+      <div class="reveal">
+        <div class="sh"><div class="stag">EXP</div><h2>Expériences</h2><div class="sline"></div></div>
+      </div>
+      <div class="card rl" data-label="work_history.log" style="transition-delay:.1s">
+        <div class="exp-item">
+          <div class="exp-meta">
+            <div><div class="exp-role">Technicien Support Informatique</div><div class="exp-co">Antares</div></div>
+            <span class="exp-date">DEC 2024 → NOW</span>
+          </div>
+          <ul class="exp-list">
+            <li>Support N1 : diagnostic & résolution d'incidents (poste de travail, applicatif, réseau, système)</li>
+            <li>Intervention à distance via TeamViewer</li>
+            <li>Gestion des tickets : GLPI, Salesforce, Jira (Worldline)</li>
+            <li>Clients : É.N. Magistrature, Opéra de Paris, Savoie</li>
+          </ul>
+        </div>
+        <hr class="exp-sep"/>
+        <div class="exp-item">
+          <div class="exp-meta">
+            <div><div class="exp-role">Stage Conception Réseau</div><div class="exp-co">Naval Group</div></div>
+            <span class="exp-date">SEP → NOV 2024</span>
+          </div>
+          <ul class="exp-list">
+            <li>Infrastructure redondante L2/L3 : VLAN, trunk, Spanning Tree, IPv4/IPv6</li>
+            <li>Bonnes pratiques ANSSI, tests performance avec Spirent</li>
+            <li>Config switches, routeurs, pare-feu Palo Alto + journalisation</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SKILLS -->
+      <div class="reveal" style="transition-delay:.05s">
+        <div class="sh"><div class="stag">SKL</div><h2>Compétences</h2><div class="sline"></div></div>
+      </div>
+      <div class="card rl" data-label="skills.json" style="transition-delay:.15s">
+        <div class="tg"><div class="tg-title">Réseaux</div><div class="tags"><span class="sk">VLAN/Trunk</span><span class="sk">Inter-VLAN</span><span class="sk">Spanning Tree</span><span class="sk">IPv4/IPv6</span><span class="sk">VPN</span><span class="sk">Pare-feu</span></div></div>
+        <div class="tg" style="margin-top:14px"><div class="tg-title">Sécurité & Infra</div><div class="tags"><span class="sk">Palo Alto</span><span class="sk">ANSSI</span><span class="sk">MFA</span><span class="sk">Active Directory</span><span class="sk">Win Server</span><span class="sk">DHCP/DNS</span><span class="sk">Zabbix</span></div></div>
+        <div class="tg" style="margin-top:14px"><div class="tg-title">Cloud & Messagerie</div><div class="tags"><span class="sk">Azure</span><span class="sk">Exchange</span><span class="sk">M365</span><span class="sk">TeamPass</span><span class="sk">KeePass</span></div></div>
+        <div class="tg" style="margin-top:14px"><div class="tg-title">Outils Support</div><div class="tags"><span class="sk">GLPI</span><span class="sk">Salesforce</span><span class="sk">Jira</span><span class="sk">TeamViewer</span></div></div>
+      </div>
+
+      <!-- SKILL BARS -->
+      <div class="card rl" data-label="proficiency.dat" style="transition-delay:.2s">
+        <div class="sbar"><div class="sbar-h"><span class="sbar-n">Support N1 / Helpdesk</span><span class="sbar-p">90%</span></div><div class="sbar-t"><div class="sbar-f" data-w="90"></div></div></div>
+        <div class="sbar"><div class="sbar-h"><span class="sbar-n">Administration réseau</span><span class="sbar-p">78%</span></div><div class="sbar-t"><div class="sbar-f" data-w="78"></div></div></div>
+        <div class="sbar"><div class="sbar-h"><span class="sbar-n">Windows Server / AD</span><span class="sbar-p">75%</span></div><div class="sbar-t"><div class="sbar-f" data-w="75"></div></div></div>
+        <div class="sbar"><div class="sbar-h"><span class="sbar-n">Sécurité / Pare-feu</span><span class="sbar-p">70%</span></div><div class="sbar-t"><div class="sbar-f" data-w="70"></div></div></div>
+        <div class="sbar"><div class="sbar-h"><span class="sbar-n">Cloud Azure</span><span class="sbar-p">65%</span></div><div class="sbar-t"><div class="sbar-f" data-w="65"></div></div></div>
+      </div>
+    </div>
+
+    <div>
+      <!-- PROFIL -->
+      <div class="reveal" style="transition-delay:.1s">
+        <div class="sh"><div class="stag">BIO</div><h2>Profil</h2><div class="sline"></div></div>
+      </div>
+      <div class="card rr" data-label="readme.md" style="transition-delay:.15s">
+        <p class="profil-text">Passionné d'informatique depuis l'enfance, approche méthodique et empathique. Motivé à mettre mes compétences au service des autres et à progresser continuellement.</p>
+      </div>
+
+      <!-- FORMATION -->
+      <div class="reveal" style="transition-delay:.1s">
+        <div class="sh"><div class="stag">EDU</div><h2>Formation</h2><div class="sline"></div></div>
+      </div>
+      <div class="card rr" data-label="education.log" style="transition-delay:.2s">
+        <div class="form-item">
+          <div class="form-title">Technicien Sup. Système & Réseaux</div>
+          <div class="form-school">AFPA Lorient</div>
+          <div class="form-date">FEV 2024 → NOV 2024</div>
+        </div>
+      </div>
+
+      <!-- CERTIFS -->
+      <div class="reveal" style="transition-delay:.1s">
+        <div class="sh"><div class="stag">CRT</div><h2>Certifications</h2><div class="sline"></div></div>
+      </div>
+      <div class="card rr" data-label="certs.db" style="transition-delay:.25s">
+        <div class="cert-item">
+          <div class="cert-badge">ITE</div>
+          <div><div class="cert-name">CISCO IT Essential</div><div class="cert-yr">2024</div></div>
+        </div>
+        <div class="cert-item">
+          <div class="cert-badge">C1</div>
+          <div><div class="cert-name">CCNA 1</div><div class="cert-yr">2024</div></div>
+        </div>
+      </div>
+
+      <!-- LANGUES -->
+      <div class="reveal" style="transition-delay:.1s">
+        <div class="sh"><div class="stag">LNG</div><h2>Langues</h2><div class="sline"></div></div>
+      </div>
+      <div class="card rr" data-label="locale.cfg" style="transition-delay:.3s">
+        <div class="lang-item">
+          <span class="lang-name">FR Français</span>
+          <div class="lang-bar"><div class="lang-bf" style="background:var(--green);box-shadow:0 0 6px var(--green);" data-w="100"></div></div>
+          <span class="lang-val" style="color:var(--green)">100%</span>
+        </div>
+        <div class="lang-item">
+          <span class="lang-name">EN Anglais</span>
+          <div class="lang-bar"><div class="lang-bf" style="background:var(--cyan);box-shadow:0 0 6px var(--cyan);" data-w="80"></div></div>
+          <span class="lang-val">B2</span>
+        </div>
+      </div>
+
+      <!-- INTÉRÊTS -->
+      <div class="reveal" style="transition-delay:.1s">
+        <div class="sh"><div class="stag">INT</div><h2>Intérêts</h2><div class="sline"></div></div>
+      </div>
+      <div class="card rr" data-label="hobbies.txt" style="transition-delay:.35s">
+        <div class="int-grid">
+          <div class="int-card"><span class="ic">🎮</span>Jeux vidéo</div>
+          <div class="int-card"><span class="ic">🏋️</span>Musculation</div>
+          <div class="int-card"><span class="ic">♟️</span>Échecs</div>
+          <div class="int-card"><span class="ic">👨‍🍳</span>Cuisine</div>
+          <div class="int-card"><span class="ic">⚽</span>Sport</div>
+          <div class="int-card"><span class="ic">📡</span>Réseaux</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer><span>EOF</span> — alexandre_alias.cv — <span>v3.0</span> — 2025</footer>
+
+<script>
+// CURSOR
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=(mx-5)+'px';cur.style.top=(my-5)+'px';});
+(function ar(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=(rx-16)+'px';ring.style.top=(ry-16)+'px';requestAnimationFrame(ar);})();
+
+// PROGRESS
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('progress').style.width=p+'%';
+});
+
+// MATRIX RAIN
+const canvas=document.getElementById('matrix'),ctx=canvas.getContext('2d');
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+const cols=Math.floor(window.innerWidth/18);
+const drops=Array(cols).fill(1);
+const chars='アイウエオカキクケコ0123456789ABCDEF<>{}[]!/\\?#';
+function drawMatrix(){
+  ctx.fillStyle='rgba(3,11,15,0.05)';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#00ff88';ctx.font='13px Share Tech Mono';
+  drops.forEach((y,i)=>{
+    ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*18,y*18);
+    if(y*18>canvas.height&&Math.random()>0.975)drops[i]=0;
+    drops[i]++;
+  });
+}
+setInterval(drawMatrix,55);
+
+// TYPING
+const phrases=['Technicien Support N1','Spécialiste Réseau','Admin. Systèmes','CISCO CCNA Certified'];
+let pi=0,ci=0,del=false;
+const tel=document.getElementById('typed');
+function type(){
+  const ph=phrases[pi];
+  tel.textContent=del?ph.substring(0,ci--):ph.substring(0,ci++);
+  if(!del&&ci===ph.length+1){del=true;setTimeout(type,1600);return;}
+  if(del&&ci===0){del=false;pi=(pi+1)%phrases.length;setTimeout(type,400);return;}
+  setTimeout(type,del?45:75);
+}
+setTimeout(type,3200);
+
+// SCROLL REVEAL
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.sbar-f').forEach(b=>b.style.width=b.dataset.w+'%');
+      e.target.querySelectorAll('.lang-bf').forEach(b=>b.style.width=b.dataset.w+'%');
+    }
+  });
+},{threshold:0.12});
+document.querySelectorAll('.reveal,.rl,.rr').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
