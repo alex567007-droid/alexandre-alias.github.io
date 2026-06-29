@@ -95,7 +95,6 @@
     .blink{animation:blink 1s infinite;color:var(--green);}
     @keyframes blink{50%{opacity:0;}}
 
-    /* CONTACTS PLUS VISIBLES */
     .contact-bar {
       display: flex; flex-wrap: wrap; gap: 25px; justify-content: center;
       margin: 25px 0 20px; opacity: 0; animation: fadeUp 0.5s 2.3s forwards;
@@ -120,12 +119,83 @@
     .chip::before{content:'> ';color:var(--green);}
     .chip:hover{border-color:var(--green);color:var(--green);box-shadow:var(--glow-g);}
 
+    /* BADGE DURÉE */
+    .exp-duration-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(0,255,136,0.08); border: 1px solid var(--green);
+      border-radius: 3px; padding: 4px 12px; font-size: 0.72rem;
+      color: var(--green); font-family: 'Orbitron', monospace; font-weight: 700;
+      letter-spacing: 1px; box-shadow: var(--glow-g); margin-bottom: 14px;
+    }
+    .exp-duration-badge::before { content: '⏱ '; }
+
+    /* BLOC N1 QUOTIDIEN */
+    .n1-block {
+      margin-top: 16px;
+      border: 1px solid rgba(0,229,255,0.15);
+      border-radius: 3px;
+      padding: 14px 16px;
+      background: rgba(0,229,255,0.03);
+    }
+    .n1-block-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.62rem;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .n1-block-title::before { content: '// '; color: var(--muted); }
+    .n1-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 18px;
+    }
+    .n1-item {
+      font-size: 0.76rem;
+      color: #7ab8a8;
+      line-height: 1.5;
+      padding: 3px 0 3px 16px;
+      position: relative;
+    }
+    .n1-item::before {
+      content: '▸';
+      position: absolute; left: 0;
+      color: var(--cyan); font-size: 0.65rem;
+    }
+
+    /* STATS ROW */
+    .stats-row {
+      display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px;
+    }
+    .stat-chip {
+      flex: 1; min-width: 80px;
+      background: rgba(0,255,136,0.05);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .stat-chip .stat-val {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--green);
+      text-shadow: var(--glow-g);
+    }
+    .stat-chip .stat-lbl {
+      font-size: 0.62rem;
+      color: var(--muted);
+      margin-top: 3px;
+      letter-spacing: 1px;
+    }
+
     .scroll-hint{opacity:0;animation:fadeUp 0.4s 3.2s forwards;font-size:0.7rem;color:var(--muted);letter-spacing:3px;}
     .s-arrow{display:block;width:1px;height:48px;background:linear-gradient(to bottom,var(--green),transparent);margin:8px auto 0;animation:sp 2s infinite;}
     @keyframes sp{0%,100%{opacity:1}50%{opacity:0.2}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-    main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 20px 100px;}
+    main{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 20px 100px;}
     .two-col{display:grid;grid-template-columns:1fr 290px;gap:24px;align-items:start;}
     .sh{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
     .sh .stag{
@@ -160,10 +230,11 @@
     .exp-co{font-size:0.76rem;color:var(--cyan);margin-top:3px;}
     .exp-co::before{content:'// ';}
     .exp-date{font-size:0.7rem;color:var(--muted);border:1px solid var(--border);padding:2px 10px;border-radius:2px;white-space:nowrap;}
-    .exp-sep{border:none;border-top:1px dashed rgba(0,255,136,0.12);margin:18px 0;}
+    .exp-sep{border:none;border-top:1px dashed rgba(0,255,136,0.12);margin:22px 0;}
     .exp-list{list-style:none;}
     .exp-list li{font-size:0.8rem;color:#8ab8a0;line-height:1.6;padding:3px 0 3px 18px;position:relative;}
     .exp-list li::before{content:'→';position:absolute;left:0;color:var(--green);font-size:0.72rem;}
+    .exp-list li strong { color: var(--text); }
     .tg{margin-bottom:14px;}
     .tg:last-child{margin-bottom:0;}
     .tg-title{font-size:0.66rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
@@ -223,6 +294,8 @@
       .two-col{grid-template-columns:1fr;}
       body{cursor:auto;}
       #cursor,#cursor-ring{display:none;}
+      .n1-cols{grid-template-columns:1fr;}
+      .stats-row{flex-direction:column;}
     }
   </style>
 </head>
@@ -248,7 +321,6 @@
       <div><span id="typed"></span><span class="blink">█</span></div>
     </div>
 
-    <!-- Contacts bien visibles -->
     <div class="contact-bar">
       <a href="tel:0682034541">📞 06 82 03 45 41</a>
       <a href="mailto:alex567007@gmail.com">✉️ alex567007@gmail.com</a>
@@ -266,32 +338,102 @@
 <main>
   <div class="two-col">
     <div>
+
       <!-- EXP -->
       <div class="reveal">
         <div class="sh"><div class="stag">EXP</div><h2>Expériences</h2><div class="sline"></div></div>
       </div>
+
       <div class="card rl" data-label="work_history.log" style="transition-delay:.1s">
+
+        <!-- ANTARES N1 — POSTE PRINCIPAL -->
         <div class="exp-item">
           <div class="exp-meta">
-            <div><div class="exp-role">Technicien Support Informatique</div><div class="exp-co">Antares</div></div>
+            <div>
+              <div class="exp-role">Technicien Support Informatique N1</div>
+              <div class="exp-co">Antares — CDI</div>
+            </div>
             <span class="exp-date">DEC 2024 → NOW</span>
           </div>
-          <ul class="exp-list">
-            <li>Support N1 : diagnostic & résolution d'incidents (poste de travail, applicatif, réseau, système)</li>
-            <li>Intervention à distance via TeamViewer</li>
-            <li>Gestion des tickets : GLPI, Salesforce, Jira (Worldline)</li>
+
+          <div class="exp-duration-badge">+18 MOIS D'EXPÉRIENCE N1</div>
+
+          <!-- Chiffres clés -->
+          <div class="stats-row">
+            <div class="stat-chip">
+              <div class="stat-val">N1</div>
+              <div class="stat-lbl">Niveau support</div>
+            </div>
+            <div class="stat-chip">
+              <div class="stat-val">3</div>
+              <div class="stat-lbl">Outils ticketing</div>
+            </div>
+            <div class="stat-chip">
+              <div class="stat-val">CDI</div>
+              <div class="stat-lbl">Type contrat</div>
+            </div>
+            <div class="stat-chip">
+              <div class="stat-val">SLA</div>
+              <div class="stat-lbl">Respect indicateurs</div>
+            </div>
+          </div>
+
+          <!-- Missions principales -->
+          <ul class="exp-list" style="margin-top:14px;">
+            <li><strong>Prise en charge des incidents entrants</strong> : qualification, priorisation et résolution en première ligne (poste de travail, applicatif, réseau, système)</li>
+            <li><strong>Intervention à distance</strong> via TeamViewer : prise de main sur les postes utilisateurs pour résoudre rapidement les incidents sans déplacement</li>
+            <li><strong>Gestion du cycle de vie des tickets</strong> via GLPI, Salesforce et Jira (Worldline) : ouverture, suivi, escalade N2 si nécessaire, clôture et documentation</li>
+            <li><strong>Administration des comptes utilisateurs</strong> : création, modification et désactivation de comptes Active Directory, réinitialisation de mots de passe (KeePass, Teampass)</li>
+            <li><strong>Gestion des accès</strong> : attribution de droits, gestion des groupes AD, VPN, accès internet, pare-feu et connexions distantes</li>
+            <li><strong>Support messagerie et outils cloud</strong> : incidents Exchange, Microsoft 365 (Outlook, Teams, SharePoint, OneDrive), Azure AD</li>
+            <li><strong>Sécurisation et sensibilisation</strong> : détection d'anomalies, application des politiques de sécurité, assistance aux utilisateurs sur les bonnes pratiques</li>
+            <li><strong>Suivi client et respect des SLA</strong> : coordination avec les utilisateurs, reporting, gestion des priorités, rigueur et respect des procédures internes</li>
+            <li><strong>Communication et relation utilisateurs</strong> : écoute active, reformulation des problèmes, suivi jusqu'à résolution complète et confirmation de satisfaction</li>
+          </ul>
+
+          <!-- Tâches N1 quotidiennes -->
+          <div class="n1-block">
+            <div class="n1-block-title">Tâches quotidiennes N1 — Détail des activités récurrentes</div>
+            <div class="n1-cols">
+              <div class="n1-item">Réception et qualification des appels & tickets entrants</div>
+              <div class="n1-item">Diagnostic postes Windows (freeze, lenteur, crash, BSOD)</div>
+              <div class="n1-item">Réinitialisation de mots de passe et déverrouillage de comptes AD</div>
+              <div class="n1-item">Configuration et dépannage des clients mail (Outlook, Thunderbird)</div>
+              <div class="n1-item">Installation et mise à jour logicielle (déploiement SCCM / manuel)</div>
+              <div class="n1-item">Résolution d'incidents VPN (Cisco AnyConnect, GlobalProtect)</div>
+              <div class="n1-item">Configuration d'imprimantes réseau et résolution de problèmes d'impression</div>
+              <div class="n1-item">Assistance à la connexion Wi-Fi / réseau filaire en entreprise</div>
+              <div class="n1-item">Mapping de lecteurs réseau et gestion des droits sur partages fichiers</div>
+              <div class="n1-item">Support Teams / Visio : problèmes audio, caméra, partage d'écran</div>
+              <div class="n1-item">Gestion des demandes de changement de matériel (clavier, souris, écran)</div>
+              <div class="n1-item">Suivi des escalades vers le N2 avec documentation précise</div>
+              <div class="n1-item">Rédaction de procédures et mise à jour de la base de connaissances</div>
+              <div class="n1-item">Vérification et traitement des alertes de supervision (Zabbix)</div>
+              <div class="n1-item">Accueil téléphonique : gestion du flux d'appels, files d'attente</div>
+              <div class="n1-item">Création et suivi de tickets dans GLPI / Salesforce / Jira</div>
+            </div>
+          </div>
+
+          <!-- Clients notables (anonymisés) -->
+          <ul class="exp-list" style="margin-top:14px;">
+            <li>Support multi-clients : gestion des incidents pour des organisations du secteur public (magistrature, opéra national) et des entreprises de grande taille</li>
+            <li>Environnements variés : de 50 à plusieurs centaines de postes, avec des contraintes métiers différentes selon les clients</li>
           </ul>
         </div>
+
         <hr class="exp-sep"/>
+
+        <!-- NAVAL GROUP -->
         <div class="exp-item">
           <div class="exp-meta">
-            <div><div class="exp-role">Stage Conception Réseau</div><div class="exp-co">Naval Group</div></div>
+            <div><div class="exp-role">Stage — Conception Réseau</div><div class="exp-co">Naval Group</div></div>
             <span class="exp-date">SEP → NOV 2024</span>
           </div>
           <ul class="exp-list">
-            <li>Infrastructure redondance L2/L3 : VLAN, trunk, Spanning Tree, IPv4/IPv6</li>
-            <li>Bonnes pratiques ANSSI, tests performance avec Spirent</li>
-            <li>Config switches, routeurs, pare-feu Palo Alto + journalisation</li>
+            <li>Conception d'infrastructure réseau redondante L2/L3 : VLAN, trunk, routage inter-VLAN, Spanning Tree, IPv4/IPv6</li>
+            <li>Application des bonnes pratiques ANSSI, tests de performance et de stabilité avec Spirent</li>
+            <li>Configuration de switches, routeurs et pare-feu Palo Alto avec journalisation complète</li>
+            <li>Travail dans un environnement industriel exigeant, avec documentation technique rigoureuse</li>
           </ul>
         </div>
       </div>
@@ -301,27 +443,31 @@
         <div class="sh"><div class="stag">SKL</div><h2>Compétences</h2><div class="sline"></div></div>
       </div>
       <div class="card rl" data-label="skills.json" style="transition-delay:.15s">
-        <div class="tg"><div class="tg-title">Réseaux</div><div class="tags"><span class="sk">VLAN/Trunk</span><span class="sk">Inter-VLAN</span><span class="sk">Spanning Tree</span><span class="sk">IPv4/IPv6</span><span class="sk">VPN</span><span class="sk">Pare-feu</span></div></div>
-        <div class="tg" style="margin-top:14px"><div class="tg-title">Sécurité & Infra</div><div class="tags"><span class="sk">Palo Alto</span><span class="sk">ANSSI</span><span class="sk">MFA</span><span class="sk">Active Directory</span><span class="sk">Win Server</span><span class="sk">DHCP/DNS</span></div></div>
-        <div class="tg" style="margin-top:14px"><div class="tg-title">Outils Support</div><div class="tags"><span class="sk">GLPI</span><span class="sk">Salesforce</span><span class="sk">Jira</span><span class="sk">TeamViewer</span></div></div>
+        <div class="tg"><div class="tg-title">Support N1 — Helpdesk</div><div class="tags"><span class="sk">Diagnostic incidents</span><span class="sk">Active Directory</span><span class="sk">GLPI</span><span class="sk">Salesforce</span><span class="sk">Jira</span><span class="sk">TeamViewer</span><span class="sk">Reset MDP</span><span class="sk">Escalade N2</span><span class="sk">SLA</span></div></div>
+        <div class="tg" style="margin-top:14px"><div class="tg-title">Systèmes & Environnements</div><div class="tags"><span class="sk">Windows 10/11</span><span class="sk">Windows Server</span><span class="sk">Microsoft 365</span><span class="sk">Exchange</span><span class="sk">Azure AD</span><span class="sk">DHCP/DNS</span><span class="sk">Zabbix</span></div></div>
+        <div class="tg" style="margin-top:14px"><div class="tg-title">Réseaux</div><div class="tags"><span class="sk">VLAN/Trunk</span><span class="sk">Inter-VLAN</span><span class="sk">Spanning Tree</span><span class="sk">IPv4/IPv6</span><span class="sk">VPN</span><span class="sk">Pare-feu</span></div></div>
+        <div class="tg" style="margin-top:14px"><div class="tg-title">Sécurité & Infra</div><div class="tags"><span class="sk">Palo Alto</span><span class="sk">ANSSI</span><span class="sk">MFA</span><span class="sk">KeePass/Teampass</span></div></div>
       </div>
 
       <!-- SKILL BARS -->
       <div class="card rl" data-label="proficiency.dat" style="transition-delay:.2s">
-        <div class="sbar"><div class="sbar-h"><span class="sbar-n">Support N1 / Helpdesk</span><span class="sbar-p">90%</span></div><div class="sbar-t"><div class="sbar-f" data-w="90"></div></div></div>
+        <div class="sbar"><div class="sbar-h"><span class="sbar-n">Support N1 / Helpdesk</span><span class="sbar-p">92%</span></div><div class="sbar-t"><div class="sbar-f" data-w="92"></div></div></div>
+        <div class="sbar"><div class="sbar-h"><span class="sbar-n">Gestion des tickets (GLPI / Jira)</span><span class="sbar-p">88%</span></div><div class="sbar-t"><div class="sbar-f" data-w="88"></div></div></div>
+        <div class="sbar"><div class="sbar-h"><span class="sbar-n">Administration Windows / AD</span><span class="sbar-p">80%</span></div><div class="sbar-t"><div class="sbar-f" data-w="80"></div></div></div>
         <div class="sbar"><div class="sbar-h"><span class="sbar-n">Administration réseau</span><span class="sbar-p">78%</span></div><div class="sbar-t"><div class="sbar-f" data-w="78"></div></div></div>
-        <div class="sbar"><div class="sbar-h"><span class="sbar-n">Windows Server / AD</span><span class="sbar-p">75%</span></div><div class="sbar-t"><div class="sbar-f" data-w="75"></div></div></div>
         <div class="sbar"><div class="sbar-h"><span class="sbar-n">Sécurité / Pare-feu</span><span class="sbar-p">70%</span></div><div class="sbar-t"><div class="sbar-f" data-w="70"></div></div></div>
+        <div class="sbar"><div class="sbar-h"><span class="sbar-n">Microsoft 365 / Azure AD</span><span class="sbar-p">75%</span></div><div class="sbar-t"><div class="sbar-f" data-w="75"></div></div></div>
       </div>
     </div>
 
+    <!-- COLONNE DROITE -->
     <div>
       <!-- PROFIL -->
       <div class="reveal" style="transition-delay:.1s">
         <div class="sh"><div class="stag">BIO</div><h2>Profil</h2><div class="sline"></div></div>
       </div>
       <div class="card rr" data-label="readme.md" style="transition-delay:.15s">
-        <p class="profil-text">Passionné d'informatique depuis l'enfance, approche méthodique et empathique. Motivé à mettre mes compétences au service des autres et à progresser continuellement.</p>
+        <p class="profil-text">Passionné d'informatique depuis l'enfance, approche méthodique et empathique. Fort de plus d'un an et demi d'expérience en support N1, je maîtrise le cycle complet de gestion des incidents et la relation utilisateur. Motivé à progresser continuellement et à mettre mes compétences au service des équipes et des utilisateurs.</p>
       </div>
 
       <!-- FORMATION -->
@@ -386,22 +532,19 @@
   </div>
 </main>
 
-<footer><span>EOF</span> — alexandre_alias.cv — <span>v3.1</span> — 2026</footer>
+<footer><span>EOF</span> — alexandre_alias.cv — <span>v4.0</span> — 2026</footer>
 
 <script>
-// CURSOR
 const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=(mx-5)+'px';cur.style.top=(my-5)+'px';});
 (function ar(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=(rx-16)+'px';ring.style.top=(ry-16)+'px';requestAnimationFrame(ar);})();
 
-// PROGRESS
 window.addEventListener('scroll',()=>{
   const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
   document.getElementById('progress').style.width=p+'%';
 });
 
-// MATRIX RAIN
 const canvas=document.getElementById('matrix'),ctx=canvas.getContext('2d');
 function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
 resize();window.addEventListener('resize',resize);
@@ -419,45 +562,30 @@ function drawMatrix(){
 }
 setInterval(drawMatrix,55);
 
-// TYPING - Version corrigée (dernière lettre reste plus longtemps)
 const phrases = [
   'Technicien Support Informatique N1',
-  'Support Helpdesk',
-  'Technicien Support N1',
+  'Support Helpdesk — +18 mois d\'expérience',
+  'Technicien Support N1 — CDI',
   'Lorient (56)'
 ];
 let pi = 0, ci = 0, isDeleting = false;
 const typed = document.getElementById('typed');
-
 function type() {
   const currentPhrase = phrases[pi];
-  
-  if (isDeleting) {
-    ci--;
-  } else {
-    ci++;
-  }
-
+  if (isDeleting) { ci--; } else { ci++; }
   typed.textContent = currentPhrase.substring(0, ci);
-
   let typeSpeed = isDeleting ? 40 : 70;
-
   if (!isDeleting && ci === currentPhrase.length) {
-    typeSpeed = 2000;        // ← Pause plus longue quand la phrase est complète
-    isDeleting = true;
-  } 
-  else if (isDeleting && ci === 0) {
+    typeSpeed = 2000; isDeleting = true;
+  } else if (isDeleting && ci === 0) {
     isDeleting = false;
     pi = (pi + 1) % phrases.length;
     typeSpeed = 600;
   }
-
   setTimeout(type, typeSpeed);
 }
-
 setTimeout(type, 2800);
 
-// SCROLL REVEAL
 const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(e.isIntersecting){
